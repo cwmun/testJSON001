@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <string-array name="Symptoms">
+        <item>Select a symptom</item>
+        <item>Normal</item>
+        <item>Bleeding</item>
+        <item>Plaque</item>
+        <item>Recession</item>
+        <item>Redness</item>
+        <item>Swelling</item>
+        <item>TBD</item>
+    </string-array>
+</resources>

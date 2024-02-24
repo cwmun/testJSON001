@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">testJSON001</string>
+    <string name="tv_json_view">Annotations</string>
+    <string name="btn_save">SAVE</string>
+    <string name="load_json">LOAD JSON</string>
+    <string name="tv_file_name">File Name</string>
+    <string name="inform">Inform Read</string>
+    <string name="inform_edt_hint">Information: Descriptions</string>
+    <string name="btn_add_image_item">Images+</string>
+
+</resources>
