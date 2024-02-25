@@ -42,19 +42,28 @@ class AnObject {
 }
 
 class ObjLicenses {
-    private int mId;
-    private String mUrl;
-    private String mName;
-    public ObjLicenses(int id, String url, String name){
-        mId  = id;
-        mUrl = url;
+    @SerializedName("id")    private int    mId;
+    @SerializedName("url")   private String mUrl;
+    @SerializedName("name")  private String mName;
+    public ObjLicenses(int id, String url, String name) {
+        this.mId = id;
+        this.mUrl = url;
+        this.mName = name;
+    }
+    public String getName() {
+        return mName;
+    }
+
+    public String getUrl() {
+        return mUrl;
     }
 }
+
 class ObjInfo {
     @SerializedName("version")
     private String mVersion;
     @SerializedName("verYear")
-    private Year mVerYear;
+    private String mVerYear;
     @SerializedName("description")
     private String mDescription;
     @SerializedName("contributors")
@@ -62,28 +71,13 @@ class ObjInfo {
     @SerializedName("date")
     private String mDate;
 
-    public ObjInfo(String version, Year verYear, String description,
+    public ObjInfo(String version, String verYear, String description,
                                    String contributors, String date) {
         mVersion     = version;
         mVerYear     = verYear;
         mDescription = description;
         mContributors= contributors;
         mDate        = date;
-    }
-}
-
-class ObjLicences {
-    @SerializedName("id")
-    private int mId;
-    @SerializedName("url")
-    private String mUrl;
-    @SerializedName("name")
-    private String mName;
-
-    public ObjLicences(int id, String url, String name) {
-        mId   =   id;
-        mUrl  =  url;
-        mName = name;
     }
 }
 
@@ -120,17 +114,17 @@ class ObjAnnot {
     @SerializedName("bbox")
     private List<Float> mBbox = new ArrayList<>();
     @SerializedName("area")
-    private List<Float> mArea;
+    private float mArea;
 
     public ObjAnnot(int id, int iscrowd, int image_id, int category_id,
-                              List segmentation, List bbox, List area) {
-        mId = id;
-        mIscrowd     = iscrowd;
-        mImage_id    = image_id;
-        mCategory_id = category_id;
-        mSegmentation= segmentation;
-        mBbox        = bbox;
-        mArea        = area;
+                              List segmentation, List bbox, float area) {
+        this.mId = id;
+        this.mIscrowd     = iscrowd;
+        this.mImage_id    = image_id;
+        this.mCategory_id = category_id;
+        this.mSegmentation= segmentation;
+        this.mBbox        = bbox;
+        this.mArea        = area;
     }
 }
 
@@ -147,18 +141,17 @@ class ObjCategory {
 }
 
 class ObjImgLabel {
-    @SerializedName("info")
-    private ObjInfo mInfo;
-    @SerializedName("images")
-    private List<ObjImages> mImages;
-    @SerializedName("annotations")
-    private List<ObjAnnot> mAnnotation;
-    @SerializedName("categories")
-    private List<ObjCategory> mCategories;
+    @SerializedName("info")           private ObjInfo mInfo;
 
-    public ObjImgLabel(ObjInfo info, List images, List annotations, List categories){
-        mInfo   = info;
-        mImages = images;
+    @SerializedName("licenses")       private ObjLicenses mLicenses;
+    @SerializedName("images")         private List<ObjImages> mImages;
+    @SerializedName("annotations")    private List<ObjAnnot> mAnnotation;
+    @SerializedName("categories")     private List<ObjCategory> mCategories;
+
+    public ObjImgLabel(ObjInfo info, ObjLicenses licenses, List images, List annotations, List categories){
+        mInfo       = info;
+        mLicenses   = licenses;
+        mImages     = images;
         mAnnotation = annotations;
         mCategories = categories;
     }

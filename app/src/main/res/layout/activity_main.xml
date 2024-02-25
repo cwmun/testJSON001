@@ -8,10 +8,10 @@
 
     <TextView
         android:id="@+id/tvAnnotation"
-        android:layout_width="547dp"
-        android:layout_height="863dp"
+        android:layout_width="469dp"
+        android:layout_height="807dp"
         android:hint="@string/tv_json_view"
-        android:scrollbars = "vertical"
+        android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"

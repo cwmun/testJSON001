@@ -41,13 +41,14 @@ public class MainActivity extends AppCompatActivity {
     public EditText edtJsFileName, edtInfo, edtImageID, edtImageWidth, edtImageHeight, edtImageFileName;
     public TextView tvAnnotation;
     public ObjInfo           infoObj;
-    public ObjLicences       licenceObj;
-    public List<ObjImages>      imageObj = new ArrayList<>();
-    public List<ObjAnnot>       annotObj = new ArrayList<>();
+    public ObjLicenses       licenseObj;
+    public List<ObjImages>   imageObj    = new ArrayList<>();
+    public List<ObjAnnot>    annotObj    = new ArrayList<>();
     public List<ObjCategory> categoryObj = new ArrayList<>();
     public ObjImgLabel       imageLabelObj;
 
-    public Gson         gson = new GsonBuilder().setPrettyPrinting().create();
+    public Gson              gson = new GsonBuilder().setPrettyPrinting().create();
+    public Gson              gson1= new Gson();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +71,9 @@ public class MainActivity extends AppCompatActivity {
 
         //==== Object creation of the SIS-COCO-Labeling Annotation for dental images
         //-- Common virtual parameters
-        int numImage =   2;   // Two-image data set
+        int numImage =   1;   // Two-image data set
         int numSeg   =   2;   // Two segmentations for all images
-        int numPnt   =   6;   // Six points for all segmentation
+        int numPnt   =   5;   // Six points for all segmentation
         //   Common image sizes
         int width    = 256;
         int height   = 256;
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         ObjInfo(String version, Year verYear, String description,
                                    String contributors, String date)
          */
-        Year verYear = Year.of(2024);
+        String verYear = Year.of(2024).toString();
         String version     = "0.0.0.1";
         String description = "[SIS Lab] COCO Labeling-data set";
         String contributors= "Chi-Woong Mun, School of BME, Inje University";
@@ -90,19 +91,16 @@ public class MainActivity extends AppCompatActivity {
 //        @SuppressLint("SimpleDateFormat") String date;
 //        date = new SimpleDateFormat("yyyy년 MM월 dd일").format(nowDate);
         String date = nowDate.toString();
-        Log.d("SIS-info1", "date = "+date);
-        infoObj = new ObjInfo(version, verYear, description, version, date);
+        Log.d("SIS-info1", "verYear = "+verYear);
+        infoObj = new ObjInfo(version, verYear, description, contributors, date);
 
-        Log.d("SIS-info", "The info object was generated");
-
-        //-- licences object --
-        //   ObjLicences(int id, String url, String name)
+        //-- licenses object --
+        //   ObjLicenses(int id, String url, String name)
         int id = 1;
         String url  = "http://bme.inje.ac.kr";
         String name =   "ALL RIGHTS RESERVED";
-        licenceObj = new ObjLicences(id, url, name);
+        licenseObj = new ObjLicenses(id, url, name);
 
-        Log.d("SIS-licences", "The licenceObj was generated");
         //-- images and annotations objects --
         /*
             1.   ObjImages(int id, int width, int height, String imgFileName)
@@ -114,13 +112,12 @@ public class MainActivity extends AppCompatActivity {
         int   category_id;                         //*****
         int   severity_id;                         //*****
         List<List>    seg = new ArrayList<>();     //*****
-        List<List>   bbox = new ArrayList<>();     //*****
-        List<Float>  area = new ArrayList<>();     //*****
+        List<Float>  bbox = new ArrayList<>();     //*****
+        float  area;                               //*****
 
         List<Float> pathX = new ArrayList<>();
         List<Float> pathY = new ArrayList<>();
         List<Float> path = new ArrayList<>();
-        List<Float> bboxPoints = new ArrayList<>();
         Random random = new Random();
         float randX, randY;
         for (int i=0; i<numImage; i++) {         //-- The i-th image
@@ -129,11 +126,13 @@ public class MainActivity extends AppCompatActivity {
             image_id    = i+1;
             category_id = 999;
             severity_id = 999;
-            path.clear();
-            bboxPoints.clear();
-            for (int iseg=0; iseg<numSeg; iseg++) {   //---- The iseg-th segmentation
+
+            for (int iSeg=0; iSeg<numSeg; iSeg++) {   //---- The iseg-th segmentation
                 pathX.clear();
                 pathY.clear();
+                path.clear();
+                bbox.clear();
+                seg.clear();
                 for (int ip=0; ip<numPnt; ip++) {            //------ The ip-th point of polygon
                     // The points are randomly generated
                     randX = (float)(random.nextFloat()*100.0);
@@ -143,21 +142,18 @@ public class MainActivity extends AppCompatActivity {
                     path.add(randX);  // point-coordinate list of segmentation ("x",y)
                     path.add(randY);  // point-coordinate list of segmentation (x,"y")
                 }
-                seg.add( new ArrayList(path) );
-                float minPathX = Collections.min(pathX);   bboxPoints.add(minPathX);
-                float minPathY = Collections.min(pathY);   bboxPoints.add(minPathY);
-                float maxPathX = Collections.max(pathX);   bboxPoints.add(maxPathX);
-                float maxPathY = Collections.max(pathY);   bboxPoints.add(maxPathY);
-                bbox.add(new ArrayList(bboxPoints));
-                float floatArea = 999.9f;
-                area.add(floatArea);
+                seg.add( path );
+                float minPathX = Collections.min(pathX);   bbox.add(minPathX);
+                float minPathY = Collections.min(pathY);   bbox.add(minPathY);
+                float maxPathX = Collections.max(pathX);   bbox.add(maxPathX);
+                float maxPathY = Collections.max(pathY);   bbox.add(maxPathY);
+                area = 999.9f;
+                annotObj.add( new ObjAnnot(iSeg, iscrowd, image_id, category_id, seg, bbox, area));
             }
-            String imageFileName = String.format("%6d", id)+".jpg";
+            String imageFileName = String.format("%06d", image_id)+".jpg";
             //imageObj.add( new ObjImages(id, width, height, imgFileName) );
             imageObj.add( new ObjImages(image_id, width, height, imageFileName) );
-            annotObj.add( new ObjAnnot(i, 0, image_id, category_id, seg, bbox, area));
         }
-        Log.d("SIS-image&annotation", "The imageObj and annotObj  were generated");
 
         //-- categories object--
         // ObjCategory(int id, String name)
@@ -167,11 +163,11 @@ public class MainActivity extends AppCompatActivity {
         for (int i=0; i<lenCategories; i++) {
             categoryObj.add(new ObjCategory(i, categories[i]));
         }
-        Log.d("SIS-categories", "The categoryObj  was generated");
 
-        imageLabelObj = new ObjImgLabel(infoObj, imageObj, annotObj, categoryObj);
+        imageLabelObj = new ObjImgLabel(infoObj, licenseObj, imageObj, annotObj, categoryObj);
 
         String strJson = gson.toJson(imageLabelObj);
+        String strJson1= gson1.toJson(imageLabelObj);
 
         tvAnnotation.setMovementMethod(new ScrollingMovementMethod());  // Scroll function of textView
         tvAnnotation.setText(strJson);
